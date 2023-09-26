@@ -2,8 +2,7 @@ using UnityEngine;
 
 public class BatCapsule : MonoBehaviour
 {
-    [SerializeField]
-    private BatCapsuleFollower _batCapsuleFollowerPrefab;
+    [SerializeField] private BatCapsuleFollower _batCapsuleFollowerPrefab;
 
     private void SpawnBatCapsuleFollower()
     {

@@ -6,8 +6,7 @@ public class BatCapsuleFollower : MonoBehaviour
     private Rigidbody _rigidbody;
     private Vector3 _velocity;
 
-    [SerializeField]
-    private float _sensitivity = 100f;
+    [SerializeField] private float _sensitivity = 100f;
 
     private void Awake()
     {
