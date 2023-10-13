@@ -21,6 +21,8 @@ public class MenuController : MonoBehaviour
     public void RestartBtn()
     {
         SceneManager.LoadScene(1);
+        LaunchProjectile.shot = false;
+        //TestBall.touch = false;
     }
 
     public void Quit()

@@ -4,16 +4,26 @@ public class Trigger : MonoBehaviour
 {
     public GameObject ball;
 
-
+    /*
     private void Awake()
     {
         ball.tag = "Ball";
     }
-
+    */
 
 
     private void OnTriggerEnter(Collider other)
     {
+        /*
+        Debug.Log("hit trigger script");
+
+        if (other.gameObject.CompareTag("Ball"))
+        {
+            Debug.Log("hit trigger script tag");
+        }
+        */
+
+        /*
         Debug.Log(other.gameObject.name);
 
         Debug.Log("hit trigger");
@@ -27,7 +37,7 @@ public class Trigger : MonoBehaviour
         {
             Debug.Log($"Object with tag: {other.tag} has entered");
         }
-
+        */
 
         /*
         Debug.Log("hit trigger");

@@ -23,6 +23,15 @@ public class Projectile : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         /*
+        Debug.Log("hit projectile script");
+
+        if (other.gameObject.CompareTag("Ball"))
+        {
+            Debug.Log("hit projectile script tag");
+        }
+        */
+
+        /*
         Debug.Log("hit trigger");
         if (other.gameObject.CompareTag("Ball"))
         {
@@ -39,8 +48,8 @@ public class Projectile : MonoBehaviour
         }
         */
 
-        Destroy(gameObject);
-        ScoreManager.scoreCount += 1;
+        //Destroy(gameObject);
+        //ScoreManager.scoreCount += 1;
 
         // nodig voor bal naar beneden
         //rb.velocity = Vector3.zero;

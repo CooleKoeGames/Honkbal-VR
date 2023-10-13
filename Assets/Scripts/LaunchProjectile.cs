@@ -1,7 +1,12 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class LaunchProjectile : MonoBehaviour
 {
+    public delegate void LaunchDelegate(GameObject projectileObj);
+    public static event LaunchDelegate OnProjectileLaunched;
+
     public Transform launchPoint;
     public GameObject projectile;
     public float launchVelocity = 15f;
@@ -13,6 +18,8 @@ public class LaunchProjectile : MonoBehaviour
 
     private float timeSinceLastShot = 0f;
     private float timeBetweenShots = 5f;
+
+    public static bool shot = false;
 
     private void Update()
     {
@@ -31,6 +38,7 @@ public class LaunchProjectile : MonoBehaviour
             }
         }
 
+        /*
         if (timeSinceLastShot >= timeBetweenShots)
         {
             var projectileInstance = Instantiate(projectile, launchPoint.position, launchPoint.rotation);
@@ -38,6 +46,35 @@ public class LaunchProjectile : MonoBehaviour
             projectileRigidbody.velocity = launchPoint.up * launchVelocity;
             timeSinceLastShot = 0f;
         }
+        */
+    }
+
+    public void Shoot()
+    {
+        if (shot == false && ScoreManager.instance.currentRound <= 2)
+        {
+            ScoreManager.instance.scoreText.text = "Distance: 0 M";
+
+            GameObject projectileObj = Instantiate(projectile, launchPoint.position, launchPoint.rotation);
+            var projectileRigidbody = projectileObj.GetComponent<Rigidbody>();
+            projectileRigidbody.velocity = launchPoint.up * launchVelocity;
+            // kan mischien weg als de code beter werkt dat kan mishein als ik de projectile zoek met een tag
+            projectileObj.name = "Projectile";
+            // dit stukje hier tussen
+            timeSinceLastShot = 0f;
+            shot = true;
+
+            if (OnProjectileLaunched != null)
+            {
+                OnProjectileLaunched(projectileObj);
+            }
+        }
+        /*
+        else
+        {
+            shot = false;
+        }
+        */
     }
 
     private void DrawTrajectory()
