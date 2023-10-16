@@ -1,0 +1,730 @@
+Distance2.cs ===========================================================
+using UnityEngine;
+
+public class Distance2 : MonoBehaviour
+{
+    public GameObject Cube1;
+    public GameObject Cube2;
+    public float Distance_;
+
+    private void Update()
+    {
+        Distance_ = Vector3.Distance(Cube1.transform.position, Cube2.transform.position);
+    }
+}
+
+Distance.cs ==================================================================
+using UnityEngine;
+
+public class Distance : MonoBehaviour
+{
+    [SerializeField] private Transform origin;
+    [SerializeField] private Vector3 cubeSize = new Vector3(1f, 1f, 1f);
+
+    [SerializeField] private float lineEndPointRadius = 0.1f;
+    [SerializeField] private float distance = 1f;
+    private Vector3 greenLineEndPoint = new Vector3();
+
+    [SerializeField] private Transform refObject;
+    [SerializeField] private float refObjectSize = 0.1f;
+
+    public float t = 0f;
+
+    private Vector3 intersection = new Vector3();
+    [SerializeField] private float intersectionSize = 0.05f;
+
+    public float distanceToGreenline = 0f;
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.green;
+        Gizmos.DrawCube(origin.position, cubeSize);
+
+        greenLineEndPoint = origin.position + (origin.forward * distance);
+
+        Gizmos.DrawRay(origin.position, greenLineEndPoint - origin.position);
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawSphere(greenLineEndPoint, lineEndPointRadius);
+
+        Gizmos.color = Color.magenta;
+        Gizmos.DrawSphere(refObject.position, refObjectSize);
+
+        t = ((refObject.position.x - greenLineEndPoint.x) * (origin.position.x - greenLineEndPoint.x) +
+            (refObject.position.y - greenLineEndPoint.y) * (origin.position.y - greenLineEndPoint.y) +
+            (refObject.position.z - greenLineEndPoint.z) * (origin.position.z - greenLineEndPoint.z)) / (distance * distance);
+
+        t = Mathf.Clamp(t, 0f, 1f);
+
+        intersection.x = greenLineEndPoint.x + t * (origin.position.x - greenLineEndPoint.x);
+        intersection.y = greenLineEndPoint.y + t * (origin.position.y - greenLineEndPoint.y);
+        intersection.z = greenLineEndPoint.z + t * (origin.position.z - greenLineEndPoint.z);
+
+        Gizmos.color = Color.red;
+        Gizmos.DrawRay(refObject.position, intersection - refObject.position);
+        Gizmos.DrawSphere(intersection, intersectionSize);
+
+        distanceToGreenline = Vector3.Distance(refObject.position, intersection);
+    }
+}
+
+DistanceToCheckpoint.cs ==================================================================
+using UnityEngine;
+using UnityEngine.UI;
+
+public class DistanceToCheckpoint : MonoBehaviour
+{
+    [SerializeField] private Transform checkpoint;
+
+    [SerializeField] private Text distanceText;
+
+    private float distance;
+
+    private void Update()
+    {
+        distance = (checkpoint.transform.position - transform.position).magnitude;
+
+        distanceText.text = "Distance: " + distance.ToString("F1") + " meters";
+    }
+}
+
+DistanceScoreScript.cs ======================================================================
+using UnityEngine;
+using UnityEngine.UI;
+
+public class DistanceScoreScript : MonoBehaviour
+{
+    public GameObject startPos;
+    public Text scoreText;
+    public GameObject scoreTextObj;
+
+    private float distance;
+
+    private void Start()
+    {
+        scoreText = scoreTextObj.GetComponent<Text>();
+    }
+
+    private void Update()
+    {
+        //distance = (startPos.transform.position + this.transform.position);
+    }
+}
+
+Destroy.cs ===========================================================================================
+using UnityEngine;
+
+public class Destroy : MonoBehaviour
+{
+    private void OnTriggerEnter(Collider collider)
+    {
+        if (collider.tag == "Ball")
+        {
+            Destroy(gameObject);
+        }
+    }
+}
+
+ScoreManager.cs =============================================================================================================================
+using System.Linq;
+using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class ScoreManager : MonoBehaviour
+{
+    public static ScoreManager instance;
+
+    public int maxRounds = 3;
+
+    public float[] allScores = new float[3];
+    public Text[] allScoresText = new Text[3];
+
+    //private int currentRound = 0;
+    public int currentRound = 0;
+
+    public Text scoreText;
+
+    public Text totalText;
+
+    private int score = 0;
+
+
+    private void Awake()
+    {
+        instance = this;
+    }
+
+    private void Start()
+    {
+        scoreText.text = "Distance: " + score.ToString() + " M";
+        //allScores = new int[maxRounds];
+        //allScoresText = new Text[maxRounds];
+    }
+
+    public void SaveScore(float incomingScore)
+    {
+        // dit is dat hij alleen werkt als je de bat raakt
+        if (currentRound < allScores.Length && TestBall.touch == true)
+        {
+            allScores[currentRound] = incomingScore;
+            allScoresText[currentRound].text = incomingScore.ToString() + " M";
+            //allScoresText[currentRound].text = currentRound + ": " + incomingScore.ToString() + " M";
+            currentRound++;
+
+            float sum = allScores.Sum();
+            totalText.text = "Total: " + sum.ToString() + " M";
+        }
+
+        // dit is dat hij als je mist dat hij nul neer zet
+        //if (currentRound < allScores.Length)
+        //{
+        //    allScores[currentRound] = incomingScore;
+        //    allScoresText[currentRound].text = incomingScore.ToString() + " M";
+        //    //allScoresText[currentRound].text = currentRound + ": " + incomingScore.ToString() + " M";
+        //}
+        //currentRound++;
+
+        //float sum = allScores.Sum();
+        //totalText.text = "Total: " + sum.ToString() + " M";
+
+    }
+
+
+
+
+
+
+
+    /*
+    public void Point()
+    {
+        Debug.Log("point 1");
+    }
+    */
+
+    /*
+    public TextMeshProUGUI scoreText;
+    public static int scoreCount;
+
+    public GameObject player;
+    public GameObject ball;
+    private float distance;
+    [SerializeField] private Text distanceText;
+    */
+
+    //private bool ballHit = false;
+
+    /*
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Bat"))
+        {
+            ballHit = true;
+        }
+    }
+    */
+
+    /*
+    private void Start()
+    {
+        //player = GameObject.Find("XR Origin (XR Rig)");
+        //ball = GameObject.Find("Bal (4) S");
+    }
+    */
+
+    /*
+    private void Update()
+    {
+        scoreText.text = "Score: " + scoreCount;
+
+        distance = Vector3.Distance(player.transform.position, ball.transform.position);
+        distanceText.text = distance.ToString("F1") + " Meters";
+
+        
+        //if (ballHit)
+        //{
+            //distance = Vector3.Distance(player.transform.position, ball.transform.position);
+            //Debug.Log("Distance between player and ball: " + distance);
+            //distanceText.text = distance.ToString("F1") + " Meters";
+            //ballHit = false;
+        //}
+        
+    }
+    */
+}
+
+LaunchProjectile.cs =================================================================================
+using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.UI;
+
+public class LaunchProjectile : MonoBehaviour
+{
+    public delegate void LaunchDelegate(GameObject projectileObj);
+    public static event LaunchDelegate OnProjectileLaunched;
+
+    public Transform launchPoint;
+    public GameObject projectile;
+    public float launchVelocity = 15f;
+
+    [Header("***Trajectory Display***")]
+    public LineRenderer lineRenderer;
+    public int linePoints = 175;
+    public float timeIntervalInPoints = 0.01f;
+
+    private float timeSinceLastShot = 0f;
+    private float timeBetweenShots = 5f;
+
+    public static bool shot = false;
+
+    private void Update()
+    {
+        timeSinceLastShot += Time.deltaTime;
+
+        if (lineRenderer != null)
+        {
+            if (Input.GetMouseButton(1))
+            {
+                DrawTrajectory();
+                lineRenderer.enabled = true;
+            }
+            else
+            {
+                lineRenderer.enabled = false;
+            }
+        }
+
+        /*
+        if (timeSinceLastShot >= timeBetweenShots)
+        {
+            var projectileInstance = Instantiate(projectile, launchPoint.position, launchPoint.rotation);
+            var projectileRigidbody = projectileInstance.GetComponent<Rigidbody>();
+            projectileRigidbody.velocity = launchPoint.up * launchVelocity;
+            timeSinceLastShot = 0f;
+        }
+        */
+    }
+
+    public void Shoot()
+    {
+        if (shot == false && ScoreManager.instance.currentRound <= 2)
+        {
+            ScoreManager.instance.scoreText.text = "Distance: 0 M";
+
+            GameObject projectileObj = Instantiate(projectile, launchPoint.position, launchPoint.rotation);
+            var projectileRigidbody = projectileObj.GetComponent<Rigidbody>();
+            projectileRigidbody.velocity = launchPoint.up * launchVelocity;
+            // kan mischien weg als de code beter werkt dat kan mishein als ik de projectile zoek met een tag
+            projectileObj.name = "Projectile";
+            // dit stukje hier tussen
+            timeSinceLastShot = 0f;
+            shot = true;
+
+            if (OnProjectileLaunched != null)
+            {
+                OnProjectileLaunched(projectileObj);
+            }
+        }
+        /*
+        else
+        {
+            shot = false;
+        }
+        */
+    }
+
+    private void DrawTrajectory()
+    {
+        var origin = launchPoint.position;
+        var startVelocity = launchVelocity * launchPoint.up;
+        lineRenderer.positionCount = linePoints;
+        var time = 0f;
+
+        for (var i = 0; i < linePoints; i++)
+        {
+            var x = (startVelocity.x * time) + (Physics.gravity.x / 2 * time * time);
+            var y = (startVelocity.y * time) + (Physics.gravity.y / 2 * time * time);
+            var point = new Vector3(x, y, 0);
+            lineRenderer.SetPosition(i, origin + point);
+            time += timeIntervalInPoints;
+        }
+    }
+}
+
+MenuController.cs ===================================================================
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.InputSystem;
+
+public class MenuController : MonoBehaviour
+{
+    public GameObject wristUI;
+
+    public bool activeWristUI;
+
+    public void StartBtn()
+    {
+        SceneManager.LoadScene(1);
+    }
+
+    public void MainMenuBtn()
+    {
+        SceneManager.LoadScene(0);
+    }
+
+    public void RestartBtn()
+    {
+        SceneManager.LoadScene(1);
+        LaunchProjectile.shot = false;
+        //TestBall.touch = false;
+    }
+
+    public void Quit()
+    {
+        Application.Quit();
+    }
+
+    private void Start()
+    {
+        DisplayWristUI();
+    }
+
+    public void WristMenuPressed(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            DisplayWristUI();
+        }
+    }
+
+    public void DisplayWristUI()
+    {
+        if (activeWristUI)
+        {
+            wristUI.SetActive(false);
+            activeWristUI = false;
+        }
+        else if (!activeWristUI)
+        {
+            wristUI.SetActive(true);
+            activeWristUI = true;
+        }
+    }
+
+    public void RestartGame()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
+    public void ExitGame()
+    {
+        Application.Quit();
+    }
+}
+
+SceneTransitionManager.cs ====================================================================================
+using System.Collections;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+
+public class SceneTransitionManager : MonoBehaviour
+{
+    public FadeScreen fadeScreen;
+
+    public void GoToScene(int sceneIndex)
+    {
+        StartCoroutine(GoToSceneRoutine(sceneIndex));
+    }
+
+    IEnumerator GoToSceneRoutine(int sceneIndex)
+    {
+        fadeScreen.FadeOut();
+        yield return new WaitForSeconds(fadeScreen.fadeDuration);
+
+        SceneManager.LoadScene(sceneIndex);
+    }
+    /*
+    public void GoToSceneAsync(int sceneIndex)
+    {
+        StartCoroutine(GoToSceneAsyncRoutine(sceneIndex));
+    }
+
+    IEnumerator GoToSceneAsyncRoutine(int sceneIndex)
+    {
+        fadeScreen.FadeOut();
+
+        AsyncOperation operation = SceneManager.LoadSceneAsync(sceneIndex);
+        operation.allowSceneActivation = false;
+
+        float timer = 0f;
+        while (timer <= fadeScreen.fadeDuration && !operation.isDone)
+        {
+            timer += Time.deltaTime;
+            yield return null;
+        }
+
+        operation.allowSceneActivation = true;
+    }
+    */
+}
+
+Score.cs =======================================================================================================
+using UnityEngine;
+using UnityEngine.UI;
+
+public class Score : MonoBehaviour
+{
+    /*
+    public Text scoreText;
+
+    private int score = 0;
+    */
+
+    public static int scoreValue = 0;
+    private Text score;
+
+    private void Start()
+    {
+        score = GetComponent<Text>();
+    }
+
+    private void Update()
+    {
+        score.text = "Score: " + scoreValue;
+    }
+}
+
+Ball.cs =======================================================================================
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Ball : MonoBehaviour
+{
+    public static int points = 0;
+
+    private void Start()
+    {
+        Destroy(gameObject, 20f);
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        /*
+        Debug.Log("hit ball script");
+
+        if (other.gameObject.CompareTag("Ball"))
+        {
+            Debug.Log("hit ball script tag");
+        }
+        */
+
+        if (other.CompareTag("point1"))
+        {
+            //points += 1;
+            //Debug.Log("you have " + points.ToString() + " points");
+            //ScoreManager.instance.SaveScore();
+            ScoreManager.instance.SaveScore(Mathf.Round(TestBall.dist));
+
+            LaunchProjectile.shot = false;
+            TestBall.touch = false;
+            Destroy(gameObject);
+        }
+        /*
+        if (other.CompareTag("point2"))
+        {
+            points += 2;
+            Debug.Log("you have " + points.ToString() + " points");
+            Destroy(gameObject);
+        }
+
+        if (other.CompareTag("point3"))
+        {
+            points += 3;
+            Debug.Log("you have " + points.ToString() + " points");
+            Destroy(gameObject);
+        }
+
+        if (other.CompareTag("point4"))
+        {
+            points += 4;
+            Debug.Log("you have " + points.ToString() + " points");
+            Destroy(gameObject);
+        }
+
+        if (other.CompareTag("point5"))
+        {
+            points += 5;
+            Debug.Log("you have " + points.ToString() + " points");
+            Destroy(gameObject);
+        }
+
+        if (other.CompareTag("point6"))
+        {
+            points += 6;
+            Debug.Log("you have " + points.ToString() + " points");
+            Destroy(gameObject);
+        }
+        */
+    }
+}
+
+TestBalI.cs ========================================================================================
+using UnityEngine;
+using UnityEngine.UI;
+
+public class TestBall : MonoBehaviour
+{
+    //[SerializeField] GameObject ball;
+    //[SerializeField] GameObject body;
+    Rigidbody rb;
+    [SerializeField] private Text distanceText;
+    public static bool touch = false;
+
+    public static float dist;
+
+    public GameObject player;
+    private GameObject newBall;
+
+    public GameObject projectpre;
+
+    private GameObject projectileObject;
+    private Vector3 projectilePosition;
+
+    //LaunchProjectile projectile;
+
+    /*
+    private void Start()
+    {
+        //rb = ball.GetComponent<Rigidbody>();
+
+        GameObject newBall = Instantiate(prefab);
+
+        float dist = Vector3.Distance(newBall.transform.position, player.transform.position);
+        distanceText.text = "Distance: " + dist.ToString("F1") + " meters";
+        //distanceText.text = "Distance: " + Mathf.Round(dist) + " meters";
+        Debug.Log("Distance: " + Mathf.Round(dist) + " meters");
+    }
+    */
+
+    /*
+    private void Start()
+    {
+        GameObject newBall = Instantiate(prefab);
+
+        if (newBall != null)
+        {
+            float dist = Vector3.Distance(newBall.transform.position, player.transform.position);
+            distanceText.text = "Distance: " + dist.ToString("F1") + " meters";
+            Debug.Log("Distance: " + Mathf.Round(dist) + " meters");
+        }
+    }
+    */
+
+    /*
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Ball"))
+        {
+            touch = true;
+        }
+    }
+    */
+
+    public void SetUpProjectile(GameObject incomingProjectile)
+    {
+        projectileObject = incomingProjectile;
+    }
+
+    private void OnEnable()
+    {
+        LaunchProjectile.OnProjectileLaunched += SetUpProjectile;
+    }
+
+    private void OnDisable()
+    {
+        LaunchProjectile.OnProjectileLaunched -= SetUpProjectile;
+    }
+
+    private void Start()
+    {
+        // Create a new ball object
+        //newBall = Instantiate(prefab);
+        //projectile = projectile.GetComponent<LaunchProjectile>();
+        //projectpre = Resources.Load<GameObject>("projectile");
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Ball"))
+        {
+            touch = true;
+
+            // Create a new ball object
+            //newBall = Instantiate(prefab);
+            //var ball = Instantiate(projectile);
+
+        }
+    }
+
+    private void Update()
+    {
+        //GameObject prefab = Resources.Load<GameObject>("Ballll");
+        //GameObject projectile = Instantiate(prefab).GetComponent<LaunchProjectile>().projectile;
+
+        //GameObject bal2 = Resources.Load<GameObject>("Ballll(Clone)");
+        /*
+        if (touch == true)
+        {
+            // Calculate the distance between the new ball and the player
+            float dist = Vector3.Distance(bal2.transform.position, player.transform.position);
+            distanceText.text = "Distance: " + dist.ToString("F1") + " meters";
+            Debug.Log("Distance: " + Mathf.Round(dist) + " meters");
+        }
+        */
+
+        /*
+        projectpre = Resources.Load<GameObject>("projectile");
+
+        LaunchProjectile launchPro = GetComponent<LaunchProjectile>();
+        GameObject projectile = launchPro.projectile;
+
+        */
+
+
+        //projectileObject = GameObject.Find("Projectile");
+        if (projectileObject != null)
+        {
+            projectilePosition = projectileObject.transform.position;
+        }
+
+        if (touch)
+        {
+            /*
+            // Calculate the distance between the new ball and the player
+            float dist = Vector3.Distance(projectilePosition, player.transform.position);
+            distanceText.text = "Distance: " + Mathf.Round(dist) + " meters";
+            //Debug.Log("Distance: " + dist.ToString("F1") + " meters");
+            */
+
+            // Calculate the distance between the new ball and the player
+            dist = Vector3.Distance(new Vector3(projectilePosition.x, 0, projectilePosition.z), new Vector3(player.transform.position.x, 0, player.transform.position.z));
+            distanceText.text = "Distance: " + Mathf.Round(dist) + " M";
+
+        }
+    }
+
+
+    /*
+    private void Update()
+    {
+        if (touch == true)
+        {
+            //float dist = Vector3.Distance(gameObject.CompareTag("Ball").transform.position, body.transform.position);
+            //distanceText.text = "Distance: " + dist.ToString("F1") + " meters";
+
+            //float dist = Vector3.Distance(newBall.transform.position, player.transform.position);
+            //distanceText.text = "Distance: " + dist.ToString("F1") + " meters";
+        }
+    }
+    */
+}

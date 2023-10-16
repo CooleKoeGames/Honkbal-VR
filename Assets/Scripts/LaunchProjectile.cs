@@ -1,6 +1,4 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
-using UnityEngine.UI;
 
 public class LaunchProjectile : MonoBehaviour
 {
@@ -37,16 +35,6 @@ public class LaunchProjectile : MonoBehaviour
                 lineRenderer.enabled = false;
             }
         }
-
-        /*
-        if (timeSinceLastShot >= timeBetweenShots)
-        {
-            var projectileInstance = Instantiate(projectile, launchPoint.position, launchPoint.rotation);
-            var projectileRigidbody = projectileInstance.GetComponent<Rigidbody>();
-            projectileRigidbody.velocity = launchPoint.up * launchVelocity;
-            timeSinceLastShot = 0f;
-        }
-        */
     }
 
     public void Shoot()
@@ -69,12 +57,6 @@ public class LaunchProjectile : MonoBehaviour
                 OnProjectileLaunched(projectileObj);
             }
         }
-        /*
-        else
-        {
-            shot = false;
-        }
-        */
     }
 
     private void DrawTrajectory()

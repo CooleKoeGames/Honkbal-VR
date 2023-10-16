@@ -4,12 +4,13 @@ using UnityEngine;
 
 public class SaveManager : MonoBehaviour
 {
-    public SaveGame currentSave;
+    //public SaveGame currentSave;
 }
+
 [System.Serializable]
 public class SaveGame
 {
-    public int scoreOne;
-    public int scoreTwo;
-    public int scoreThree;
+    //public int scoreOne;
+    //public int scoreTwo;
+    //public int scoreThree;
 }
