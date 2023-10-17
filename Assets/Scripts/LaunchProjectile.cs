@@ -52,11 +52,22 @@ public class LaunchProjectile : MonoBehaviour
             timeSinceLastShot = 0f;
             shot = true;
 
+            //ScoreManager.instance.SetCanvas();
+
             if (OnProjectileLaunched != null)
             {
                 OnProjectileLaunched(projectileObj);
             }
         }
+        //else if (ScoreManager.instance.currentRound >= 2 && shot == false)
+        //{
+        //    ScoreManager.instance.SetCanvas();
+        //}
+
+        //if (ScoreManager.instance.currentRound >= 2)
+        //{
+        //    ScoreManager.instance.SetCanvas();
+        //}
     }
 
     private void DrawTrajectory()

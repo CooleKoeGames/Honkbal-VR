@@ -138,7 +138,6 @@ public class TestBall : MonoBehaviour
             // Calculate the distance between the new ball and the player
             dist = Vector3.Distance(new Vector3(projectilePosition.x, 0, projectilePosition.z), new Vector3(player.transform.position.x, 0, player.transform.position.z));
             distanceText.text = "Distance: " + Mathf.Round(dist) + " M";
-
         }
     }
 

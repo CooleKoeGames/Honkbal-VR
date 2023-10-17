@@ -19,6 +19,8 @@ public class ScoreManager : MonoBehaviour
 
     private int score = 0;
 
+    public GameObject scoreCan;
+    public GameObject totalCan;
 
     private void Awake()
     {
@@ -41,5 +43,16 @@ public class ScoreManager : MonoBehaviour
             float sum = allScores.Sum();
             totalText.text = "Total: " + sum.ToString() + " M";
         }
+
+        if (currentRound == 3)
+        {
+            Invoke("SetCanvas", 2);
+        }
+    }
+
+    private void SetCanvas()
+    {
+        scoreCan.SetActive(false);
+        totalCan.SetActive(true);
     }
 }
